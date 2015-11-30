@@ -16,8 +16,13 @@ void BaseDataLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   if (top.size() == 1) {
     output_labels_ = false;
+    output_regression_values_ = false;
+  } else if (top.size() == 2){
+    output_labels_ = true;
+    output_regression_values_ = false;
   } else {
     output_labels_ = true;
+    output_regression_values_ = true;
   }
   data_transformer_.reset(
       new DataTransformer<Dtype>(transform_param_, this->phase_));
