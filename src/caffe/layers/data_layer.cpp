@@ -9,6 +9,10 @@
 #include "caffe/proto/caffe.pb.h"
 #include "caffe/util/benchmark.hpp"
 
+// added by zhaoyu
+#include "caffe/zy_define.hpp"
+// the end of added
+
 namespace caffe {
 
 template <typename Dtype>
@@ -49,6 +53,17 @@ void DataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
       this->prefetch_[i].label_.Reshape(label_shape);
     }
   }
+  // added by zhaoyu
+  // regression value
+  if (this->output_regression_values_) {
+    vector<int> regression_value_shape(zy_define::REGRESSION_NUM, batch_size);
+    top[2]->Reshape(regression_value_shape);
+    for (int i = 0; i < this.PREFETCH_COUNT; ++i) {
+      this->prefetch_[i].regression_value_.Reshape(regression_value_shape);
+    }
+  }
+  // the end of added
+
 }
 
 // This function is called on prefetch thread
@@ -76,9 +91,20 @@ void DataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
   Dtype* top_data = batch->data_.mutable_cpu_data();
   Dtype* top_label = NULL;  // suppress warnings about uninitialized variables
 
+  // added by zhaoyu
+  Dtype* top_regression_value = NULL; // regression target
+  // the end of added
+
   if (this->output_labels_) {
     top_label = batch->label_.mutable_cpu_data();
   }
+
+  // added by zhaoyu
+  if (this->output_regression_values_) {
+    top_regression_value = batch->regression_value_.mutable_cpu_data();
+  }
+  // the end of added
+
   for (int item_id = 0; item_id < batch_size; ++item_id) {
     timer.Start();
     // get a datum
@@ -93,6 +119,18 @@ void DataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
     if (this->output_labels_) {
       top_label[item_id] = datum.label();
     }
+
+    // added by zhaoyu
+    if (this->output_regression_values_) {
+      std::string& datum_string = datum.data();
+      int pos = datum_string.size() - zy_define::REGRESSION_NUM * sizeof(float);
+      char *datum_data = datum_string.c_str();
+      for (int i = 0; i < zy_define::REGRESSION_NUM; ++i) {
+        top_label[item_id * zy_define::REGRESSION_NUM + i] = *((float*)(datum_data + pos) + i);
+      }
+    }
+    // the end of added
+
     trans_time += timer.MicroSeconds();
 
     reader_.free().push(const_cast<Datum*>(&datum));
