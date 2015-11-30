@@ -29,19 +29,19 @@ using std::pair;
 using boost::scoped_ptr;
 
 DEFINE_bool(gray, false,
-  "When this option is on, treat images as grayscale ones");
+    "When this option is on, treat images as grayscale ones");
 DEFINE_bool(shuffle, false,
-  "Randomly shuffle the order of images and their labels");
+    "Randomly shuffle the order of images and their labels");
 DEFINE_string(backend, "lmdb",
-  "The backend {lmdb, leveldb} for storing the result");
+    "The backend {lmdb, leveldb} for storing the result");
 DEFINE_int32(resize_width, 0, "Width images are resized to");
 DEFINE_int32(resize_height, 0, "Height images are resized to");
 DEFINE_bool(check_size, false,
-  "When this option is on, check that all the datum have the same size");
+    "When this option is on, check that all the datum have the same size");
 DEFINE_bool(encoded, false,
-  "When this option is on, the encoded image will be save in datum");
+    "When this option is on, the encoded image will be save in datum");
 DEFINE_string(encode_type, "",
-  "Optional: What type should we encode the image as ('png','jpg',...).");
+    "Optional: What type should we encode the image as ('png','jpg',...).");
 
 // added by zhaoyu
 struct INPUT_VALUE {
